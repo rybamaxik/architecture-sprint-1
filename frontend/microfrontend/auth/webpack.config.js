@@ -68,8 +68,7 @@ module.exports = (_, argv) => ({
       exposes: {
         './Login': './src/components/Login.js',
         './Register': './src/components/Register.js',
-        './CheckToken': './src/components/CheckToken.js',
-        './SimpleTest': './src/components/SimpleTest.js'
+        './CheckToken': './src/components/CheckToken.js'
       },
       shared: {
         ...deps,
