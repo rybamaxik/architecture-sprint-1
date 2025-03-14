@@ -12,7 +12,6 @@ import EditAvatarPopup from "./EditAvatarPopup";
 import AddPlacePopup from "./AddPlacePopup";
 import InfoTooltip from "./InfoTooltip";
 import ProtectedRoute from "./ProtectedRoute";
-//import * as auth from "../utils/auth.js";
 
 const Login = lazy(() => import('auth/Login').catch(() => {
   return { default: () => <div className='error'>Component is not available!</div> };
@@ -27,11 +26,6 @@ const Register = lazy(() => import('auth/Register').catch(() => {
 const CheckToken = () => import('auth/CheckToken').catch(() => {
     return { default: () => "Error importing CheckToken" };
 });
-
-const SimpleTest = lazy(() => import('auth/SimpleTest').catch(() => {
-  return { default: () => <div className='error'>Component is not available!</div> };
-})
-);
 
 function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] =
@@ -203,7 +197,7 @@ function App() {
     // После успешного вызова обработчика onSignOut происходит редирект на /signin
     history.push("/signin");
   }
-
+1
   return (
     // В компонент App внедрён контекст через CurrentUserContext.Provider
     <CurrentUserContext.Provider value={currentUser}>
