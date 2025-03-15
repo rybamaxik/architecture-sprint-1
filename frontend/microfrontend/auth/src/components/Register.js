@@ -3,19 +3,32 @@ import { Link, Route } from 'react-router-dom';
 import { BrowserRouter } from "react-router-dom";
 
 import '../blocks/auth-form/auth-form.css';
+import * as auth from "../utils/auth.js";
 
-function Register ({ onRegister }){
+function Register() {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
 
-  function handleSubmit(e){
+  function handleSubmit(e) {
     e.preventDefault();
-    const userData = {
-      email,
-      password
-    }
-    onRegister(userData);
+
+    auth.register(email, password)
+    .then((res) => {
+      dispatchEvent(new CustomEvent("reg-ok", {
+        detail: {
+          email_address: email
+        }
+      }));
+    })
+    .catch((err) => {
+      dispatchEvent(new CustomEvent("reg-fail", {
+        detail: {
+          error: err
+        }
+      }));
+    });
   }
+
   return (
   <BrowserRouter>
     <div className="auth-form">

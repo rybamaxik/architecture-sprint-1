@@ -8,7 +8,7 @@ function Login() {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
 
-  function handleSubmit(e){
+  function handleSubmit(e) {
     e.preventDefault();
 
     auth

@@ -24,7 +24,7 @@ const Register = lazy(() => import('auth/Register').catch(() => {
 );
 
 const CheckToken = () => import('auth/CheckToken').catch(() => {
-    return { default: () => "Error importing CheckToken" };
+  return { default: () => "Error importing CheckToken" };
 });
 
 function App() {
@@ -63,7 +63,7 @@ function App() {
   React.useEffect(() => {
     const token = localStorage.getItem("jwt");
     if (token) {
-        CheckToken(token)
+      CheckToken(token)
         .then((res) => {
           setEmail(res.data.email);
           setIsLoggedIn(true);
@@ -151,28 +151,34 @@ function App() {
       .catch((err) => console.log(err));
   }
 
-  function onRegister({ email, password }) {
-    auth
-      .register(email, password)
-      .then((res) => {
-        setTooltipStatus("success");
-        setIsInfoToolTipOpen(true);
-        history.push("/signin");
-      })
-      .catch((err) => {
-        setTooltipStatus("fail");
-        setIsInfoToolTipOpen(true);
-      });
+  const handleRegOk = event => {
+    setTooltipStatus("success");
+    setIsInfoToolTipOpen(true);
+
+    history.push("/signin");
   }
 
-  const handleLoginOk = event => {
-      setIsLoggedIn(true);
-      setEmail(event.detail.email_address);
-      localStorage.setItem('jwt', event.detail.jwt);
+  const handleRegFail = event => {
+    setTooltipStatus("fail");
+    setIsInfoToolTipOpen(true);
+  }
 
-      console.log('email:', event.detail.email_address);
-      console.log('jwt:', event.detail.jwt);
-      history.push("/");
+  useEffect(() => {
+    addEventListener("reg-ok", handleRegOk);
+    return () => removeEventListener("reg-ok", handleRegOk)
+  }, []);
+
+  useEffect(() => {
+    addEventListener("reg-fail", handleRegFail);
+    return () => removeEventListener("reg-fail", handleRegFail)
+  }, []);
+
+  const handleLoginOk = event => {
+    setIsLoggedIn(true);
+    setEmail(event.detail.email_address);
+    localStorage.setItem('jwt', event.detail.jwt);
+
+    history.push("/");
   }
 
   const handleLoginFail = event => {
@@ -197,7 +203,7 @@ function App() {
     // После успешного вызова обработчика onSignOut происходит редирект на /signin
     history.push("/signin");
   }
-1
+  1
   return (
     // В компонент App внедрён контекст через CurrentUserContext.Provider
     <CurrentUserContext.Provider value={currentUser}>
@@ -218,7 +224,7 @@ function App() {
             loggedIn={isLoggedIn}
           />
           <Route path="/signup">
-            <Suspense><Register onRegister={onRegister} /></Suspense>
+            <Suspense><Register /></Suspense>
           </Route>
           <Route path="/signin">
             <Suspense><Login /></Suspense>
