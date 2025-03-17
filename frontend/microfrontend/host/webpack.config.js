@@ -14,6 +14,9 @@ module.exports = (_, argv) => ({
 
   resolve: {
     extensions: [".tsx", ".ts", ".jsx", ".js", ".json"],
+    alias: {
+      'shared-lib-usercontext': path.resolve(__dirname, '../shared/usercontext'),
+    }
   },
 
   devServer: {
@@ -71,7 +74,8 @@ module.exports = (_, argv) => ({
       name: "host",
       filename: "remoteEntry.js",
       remotes: {
-        'auth': 'auth@http://localhost:8097/remoteEntry.js'
+        'auth': 'auth@http://localhost:8097/remoteEntry.js',
+        'cardboard': 'cardboard@http://localhost:8096/remoteEntry.js'
       },
       exposes: {},
       shared: {
@@ -84,6 +88,10 @@ module.exports = (_, argv) => ({
           singleton: true,
           requiredVersion: deps["react-dom"],
         },
+        'shared-lib-usercontext': {
+          import: 'shared-lib-usercontext',
+          requiredVersion: require('../shared/usercontext/package.json').version,
+        }
       },
     }),
     new HtmlWebPackPlugin({

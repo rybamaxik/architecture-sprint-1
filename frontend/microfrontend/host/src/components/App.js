@@ -1,17 +1,16 @@
 import React, { lazy, Suspense, useEffect } from "react";
 import { Route, useHistory, Switch } from "react-router-dom";
 import Header from "./Header";
-import Main from "./Main";
 import Footer from "./Footer";
 import PopupWithForm from "./PopupWithForm";
 import ImagePopup from "./ImagePopup";
 import api from "../utils/api";
-import { CurrentUserContext } from "../contexts/CurrentUserContext";
+import { CurrentUserContext } from "shared-lib-usercontext";
 import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
 import AddPlacePopup from "./AddPlacePopup";
 import InfoTooltip from "./InfoTooltip";
-import ProtectedRoute from "./ProtectedRoute";
+import { Redirect } from "react-router-dom/cjs/react-router-dom.min";
 
 const Login = lazy(() => import('auth/Login').catch(() => {
   return { default: () => <div className='error'>Component is not available!</div> };
@@ -26,6 +25,16 @@ const Register = lazy(() => import('auth/Register').catch(() => {
 const CheckToken = () => import('auth/CheckToken').catch(() => {
   return { default: () => "Error importing CheckToken" };
 });
+
+const Main = lazy(() => import('cardboard/Main').catch(() => {
+  return { default: () => <div className='error'>Component is not available!</div> };
+})
+);
+
+const ProtectedRoute = lazy(() => import('cardboard/ProtectedRoute').catch(() => {
+  return { default: () => <div className='error'>Error importing ProtectedRoute</div> };
+})
+);
 
 function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] =
@@ -203,14 +212,14 @@ function App() {
     // После успешного вызова обработчика onSignOut происходит редирект на /signin
     history.push("/signin");
   }
-  1
+  
   return (
     // В компонент App внедрён контекст через CurrentUserContext.Provider
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page__content">
         <Header email={email} onSignOut={onSignOut} />
         <Switch>
-          <ProtectedRoute
+        <ProtectedRoute
             exact
             path="/"
             component={Main}

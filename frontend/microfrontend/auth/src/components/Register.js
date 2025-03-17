@@ -30,7 +30,6 @@ function Register() {
   }
 
   return (
-  <BrowserRouter>
     <div className="auth-form">
       <form className="auth-form__form" onSubmit={handleSubmit}>
         <div className="auth-form__wrapper">
@@ -54,7 +53,6 @@ function Register() {
         </div>
       </form>
     </div>
-  </BrowserRouter>
   )
 }
 
