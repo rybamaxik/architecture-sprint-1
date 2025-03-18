@@ -1,11 +1,30 @@
 import React from 'react';
 import Card from './Card';
 import { CurrentUserContext } from 'shared-lib-usercontext';
+import api from "../utils/api";
 
-function Main({ cards, onEditProfile, onAddPlace, onEditAvatar, onCardClick, onCardLike, onCardDelete }) {
+function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardLike, onCardDelete }) {
   const currentUser = React.useContext(CurrentUserContext);
 
   const imageStyle = { backgroundImage: `url(${currentUser.avatar})` };
+
+  const [selectedCard, setSelectedCard] = React.useState(null);
+  const [cards, setCards] = React.useState([]);
+
+  // Запрос к API за информацией о пользователе и массиве карточек выполняется единожды, при монтировании.
+  React.useEffect(() => {
+    api
+      .getAppInfo()
+      .then(([cardData, userData]) => {
+        setCurrentUser(userData);
+        setCards(cardData);
+      })
+      .catch((err) => console.log(err));
+  }, []);
+
+  function handleCardClick(card) {
+    setSelectedCard(card);
+  }
 
   return (
     <main className="content">
@@ -24,7 +43,7 @@ function Main({ cards, onEditProfile, onAddPlace, onEditAvatar, onCardClick, onC
             <Card
               key={card._id}
               card={card}
-              onCardClick={onCardClick}
+              onCardClick={handleCardClick}
               onCardLike={onCardLike}
               onCardDelete={onCardDelete}
             />

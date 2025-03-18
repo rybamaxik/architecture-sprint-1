@@ -3,7 +3,6 @@ import { Route, useHistory, Switch } from "react-router-dom";
 import Header from "./Header";
 import Footer from "./Footer";
 import PopupWithForm from "./PopupWithForm";
-import ImagePopup from "./ImagePopup";
 import api from "../utils/api";
 import { CurrentUserContext } from "shared-lib-usercontext";
 import EditProfilePopup from "./EditProfilePopup";
@@ -36,14 +35,17 @@ const ProtectedRoute = lazy(() => import('cardboard/ProtectedRoute').catch(() =>
 })
 );
 
+const ImagePopup = lazy(() => import('cardboard/ImagePopup').catch(() => {
+  return { default: () => <div className='error'>Error importing ImagePopup</div> };
+})
+);
+
 function App() {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] =
     React.useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] =
     React.useState(false);
-  const [selectedCard, setSelectedCard] = React.useState(null);
-  const [cards, setCards] = React.useState([]);
 
   // В корневом компоненте App создана стейт-переменная currentUser. Она используется в качестве значения для провайдера контекста.
   const [currentUser, setCurrentUser] = React.useState({});
@@ -56,17 +58,6 @@ function App() {
   const [email, setEmail] = React.useState("");
 
   const history = useHistory();
-
-  // Запрос к API за информацией о пользователе и массиве карточек выполняется единожды, при монтировании.
-  React.useEffect(() => {
-    api
-      .getAppInfo()
-      .then(([cardData, userData]) => {
-        setCurrentUser(userData);
-        setCards(cardData);
-      })
-      .catch((err) => console.log(err));
-  }, []);
 
   // при монтировании App описан эффект, проверяющий наличие токена и его валидности
   React.useEffect(() => {
@@ -102,11 +93,7 @@ function App() {
     setIsAddPlacePopupOpen(false);
     setIsEditAvatarPopupOpen(false);
     setIsInfoToolTipOpen(false);
-    setSelectedCard(null);
-  }
-
-  function handleCardClick(card) {
-    setSelectedCard(card);
+    //setSelectedCard(null);
   }
 
   function handleUpdateUser(userUpdate) {
@@ -223,11 +210,9 @@ function App() {
             exact
             path="/"
             component={Main}
-            cards={cards}
             onEditProfile={handleEditProfileClick}
             onAddPlace={handleAddPlaceClick}
             onEditAvatar={handleEditAvatarClick}
-            onCardClick={handleCardClick}
             onCardLike={handleCardLike}
             onCardDelete={handleCardDelete}
             loggedIn={isLoggedIn}
@@ -256,7 +241,7 @@ function App() {
           onUpdateAvatar={handleUpdateAvatar}
           onClose={closeAllPopups}
         />
-        <ImagePopup card={selectedCard} onClose={closeAllPopups} />
+        <ImagePopup onClose={closeAllPopups} />
         <InfoTooltip
           isOpen={isInfoToolTipOpen}
           onClose={closeAllPopups}
