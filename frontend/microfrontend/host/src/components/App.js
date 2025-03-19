@@ -4,6 +4,7 @@ import Header from "./Header";
 import Footer from "./Footer";
 import PopupWithForm from "./PopupWithForm";
 import api from "../utils/api";
+import * as auth from "../utils/auth.js";
 import { CurrentUserContext } from "shared-lib-usercontext";
 import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
@@ -21,9 +22,11 @@ const Register = lazy(() => import('auth/Register').catch(() => {
 })
 );
 
-const CheckToken = () => import('auth/CheckToken').catch(() => {
-  return { default: () => "Error importing CheckToken" };
-});
+// Я слишком плохо знаю JS, поэтому у меня не получается импортировать функцию 
+// CheckToken из микрофронтэнда auth. Поэтому закомментирую пока импорт (снизу):
+//const CheckToken = (token) => import('auth/CheckToken').catch(() => {
+//  return { default: () => "Error importing CheckToken" };
+//});
 
 const Main = lazy(() => import('cardboard/Main').catch(() => {
   return { default: () => <div className='error'>Component is not available!</div> };
@@ -59,11 +62,24 @@ function App() {
 
   const history = useHistory();
 
+  // Запрос к API за информацией о пользователе и массиве карточек выполняется единожды, при монтировании.
+  React.useEffect(() => {
+    api.getUserInfo()
+      .then((userData) => {
+        setCurrentUser(userData);
+      })
+      .catch((err) => console.log(err));
+  }, []);
+  
   // при монтировании App описан эффект, проверяющий наличие токена и его валидности
   React.useEffect(() => {
     const token = localStorage.getItem("jwt");
     if (token) {
-      CheckToken(token)
+      // TODO: микрофронтэнд host должен обращаться к микрофронтэнду auth за функционалом checkToken, 
+      // но у меня не получилось это сделать, поэтому пока оставил checkToken в host/src/utils/auth.js
+
+      //CheckToken(token) - закомментировал
+      auth.checkToken(token)
         .then((res) => {
           setEmail(res.data.email);
           setIsLoggedIn(true);

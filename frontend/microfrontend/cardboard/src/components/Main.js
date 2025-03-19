@@ -14,14 +14,13 @@ function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardLike, onCardDelet
   // Запрос к API за информацией о пользователе и массиве карточек выполняется единожды, при монтировании.
   React.useEffect(() => {
     api
-      .getAppInfo()
-      .then(([cardData, userData]) => {
-        setCurrentUser(userData);
+      .getCardList()
+      .then((cardData) => {
         setCards(cardData);
       })
       .catch((err) => console.log(err));
   }, []);
-
+  
   function handleCardClick(card) {
     setSelectedCard(card);
   }
