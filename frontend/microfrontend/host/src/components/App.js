@@ -206,7 +206,7 @@ function App() {
       <div className="page__content">
         <Header email={email} onSignOut={onSignOut} />
         <Switch>
-        <ProtectedRoute
+          <ProtectedRoute
             exact
             path="/"
             component={Main}

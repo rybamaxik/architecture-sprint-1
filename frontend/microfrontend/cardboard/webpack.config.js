@@ -70,7 +70,8 @@ module.exports = (_, argv) => ({
       remotes: {},
       exposes: {
         './Main': './src/components/Main.js',
-        './ProtectedRoute': './src/components/ProtectedRoute.js'
+        './ProtectedRoute': './src/components/ProtectedRoute.js',
+        './ImagePopup': './src/components/ImagePopup.js'
       },
       shared: {
         ...deps,
