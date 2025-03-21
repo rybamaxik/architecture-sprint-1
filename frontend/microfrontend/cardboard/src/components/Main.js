@@ -1,9 +1,14 @@
 import React from 'react';
+import { Switch } from 'react-router-dom';
 import Card from './Card';
 import { CurrentUserContext } from 'shared-lib-usercontext';
 import api from "../utils/api";
+import ImagePopup from './ImagePopup';
 
-function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardLike, onCardDelete }) {
+import '../blocks/profile/profile.css';
+
+
+function Main({ onClose, onEditProfile, onAddPlace, onEditAvatar }) {
   const currentUser = React.useContext(CurrentUserContext);
 
   const imageStyle = { backgroundImage: `url(${currentUser.avatar})` };
@@ -25,7 +30,34 @@ function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardLike, onCardDelet
     setSelectedCard(card);
   }
 
+  function handleCardLike(card) {
+    const isLiked = card.likes.some((i) => i._id === currentUser._id);
+    api
+      .changeLikeCardStatus(card._id, !isLiked)
+      .then((newCard) => {
+        setCards((cards) =>
+          cards.map((c) => (c._id === card._id ? newCard : c))
+        );
+      })
+      .catch((err) => console.log(err));
+  }
+
+  function handleCardDelete(card) {
+    api
+      .removeCard(card._id)
+      .then(() => {
+        setCards((cards) => cards.filter((c) => c._id !== card._id));
+      })
+      .catch((err) => console.log(err));
+  }
+
+  function handleCardClose(card) {
+    setSelectedCard(null);
+    onClose();
+  }
+
   return (
+    <div className="page__content">
     <main className="content">
       <section className="profile page__section">
         <div className="profile__image" onClick={onEditAvatar} style={imageStyle}></div>
@@ -43,13 +75,15 @@ function Main({ onEditProfile, onAddPlace, onEditAvatar, onCardLike, onCardDelet
               key={card._id}
               card={card}
               onCardClick={handleCardClick}
-              onCardLike={onCardLike}
-              onCardDelete={onCardDelete}
+              onCardLike={handleCardLike}
+              onCardDelete={handleCardDelete}
             />
           ))}
         </ul>
       </section>
     </main>
+    <ImagePopup card={selectedCard} onClose={handleCardClose} />
+    </div>
   );
 }
 

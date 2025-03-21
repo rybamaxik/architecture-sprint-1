@@ -78,7 +78,7 @@ function App() {
       // TODO: микрофронтэнд host должен обращаться к микрофронтэнду auth за функционалом checkToken, 
       // но у меня не получилось это сделать, поэтому пока оставил checkToken в host/src/utils/auth.js
 
-      //CheckToken(token) - закомментировал
+      //CheckToken(token) - закомментировал (так мы обращаемся к auth/CheckToken)
       auth.checkToken(token)
         .then((res) => {
           setEmail(res.data.email);
@@ -109,7 +109,6 @@ function App() {
     setIsAddPlacePopupOpen(false);
     setIsEditAvatarPopupOpen(false);
     setIsInfoToolTipOpen(false);
-    //setSelectedCard(null);
   }
 
   function handleUpdateUser(userUpdate) {
@@ -128,27 +127,6 @@ function App() {
       .then((newUserData) => {
         setCurrentUser(newUserData);
         closeAllPopups();
-      })
-      .catch((err) => console.log(err));
-  }
-
-  function handleCardLike(card) {
-    const isLiked = card.likes.some((i) => i._id === currentUser._id);
-    api
-      .changeLikeCardStatus(card._id, !isLiked)
-      .then((newCard) => {
-        setCards((cards) =>
-          cards.map((c) => (c._id === card._id ? newCard : c))
-        );
-      })
-      .catch((err) => console.log(err));
-  }
-
-  function handleCardDelete(card) {
-    api
-      .removeCard(card._id)
-      .then(() => {
-        setCards((cards) => cards.filter((c) => c._id !== card._id));
       })
       .catch((err) => console.log(err));
   }
@@ -226,11 +204,10 @@ function App() {
             exact
             path="/"
             component={Main}
+            onClose={closeAllPopups}
             onEditProfile={handleEditProfileClick}
             onAddPlace={handleAddPlaceClick}
             onEditAvatar={handleEditAvatarClick}
-            onCardLike={handleCardLike}
-            onCardDelete={handleCardDelete}
             loggedIn={isLoggedIn}
           />
           <Route path="/signup">
@@ -257,7 +234,6 @@ function App() {
           onUpdateAvatar={handleUpdateAvatar}
           onClose={closeAllPopups}
         />
-        <ImagePopup onClose={closeAllPopups} />
         <InfoTooltip
           isOpen={isInfoToolTipOpen}
           onClose={closeAllPopups}
