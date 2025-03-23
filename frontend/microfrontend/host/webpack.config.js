@@ -61,10 +61,15 @@ module.exports = (_, argv) => ({
         },
       },
       {
-        test: /\.svg$/,
-        use: {
-          loader: 'url-loader?limit=100000'
-        }
+        test: /\.svg$/i,
+        type: 'asset',
+        resourceQuery: /url/, // *.svg?url
+      },
+      {
+        test: /\.svg$/i,
+        issuer: /\.[jt]sx?$/,
+        resourceQuery: { not: [/url/] }, // exclude react component if *.svg?url
+        use: ['@svgr/webpack'],
       }
     ],
   },
@@ -74,10 +79,12 @@ module.exports = (_, argv) => ({
       name: "host",
       filename: "remoteEntry.js",
       remotes: {
-        'auth': 'auth@http://localhost:8097/remoteEntry.js',
-        'cardboard': 'cardboard@http://localhost:8096/remoteEntry.js'
+        'cardboard': 'cardboard@http://localhost:8096/remoteEntry.js',
+        'auth': 'auth@http://localhost:8097/remoteEntry.js'
       },
-      exposes: {},
+      exposes: {
+        './PopupWithForm': './src/components/PopupWithForm.js'
+      },
       shared: {
         ...deps,
         react: {

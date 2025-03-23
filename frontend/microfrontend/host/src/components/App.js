@@ -3,56 +3,46 @@ import { Route, useHistory, Switch } from "react-router-dom";
 import Header from "./Header";
 import Footer from "./Footer";
 import PopupWithForm from "./PopupWithForm";
-import api from "../utils/api";
 import * as auth from "../utils/auth.js";
-import { CurrentUserContext } from "shared-lib-usercontext";
-import EditProfilePopup from "./EditProfilePopup";
-import EditAvatarPopup from "./EditAvatarPopup";
-import AddPlacePopup from "./AddPlacePopup";
-import InfoTooltip from "./InfoTooltip";
-import { Redirect } from "react-router-dom/cjs/react-router-dom.min";
+
+import '../index.css';
 
 const Login = lazy(() => import('auth/Login').catch(() => {
-  return { default: () => <div className='error'>Component is not available!</div> };
+  return { default: () => <div className='error'>Login component is not available!</div> };
 })
 );
 
 const Register = lazy(() => import('auth/Register').catch(() => {
-  return { default: () => <div className='error'>Component is not available!</div> };
+  return { default: () => <div className='error'>Register component is not available!</div> };
 })
 );
 
-// Я слишком плохо знаю JS, поэтому у меня не получается импортировать функцию 
+const InfoTooltip = lazy(() => import('auth/InfoTooltip').catch(() => {
+  return { default: () => <div className='error'>InfoTooltip component is not available!</div> };
+})
+);
+
+// Я слишком плохо знаю JS (и webpack), поэтому у меня не получается импортировать функцию 
 // CheckToken из микрофронтэнда auth. Поэтому закомментирую пока импорт (снизу):
 //const CheckToken = (token) => import('auth/CheckToken').catch(() => {
 //  return { default: () => "Error importing CheckToken" };
 //});
+// Пришлось дублировать CheckToken здесь в utils/auth.js
+// Наверное, можно было бы вынести эту функцию в shared (как я сделал с CurrentUserContext), 
+// но эта функция по идее должна быть рядом с остальными функциями auth. В общем, пока не 
+// знаю, как лучше поступить :-(
 
 const Main = lazy(() => import('cardboard/Main').catch(() => {
-  return { default: () => <div className='error'>Component is not available!</div> };
+  return { default: () => <div className='error'>Main component is not available!</div> };
 })
 );
 
 const ProtectedRoute = lazy(() => import('cardboard/ProtectedRoute').catch(() => {
-  return { default: () => <div className='error'>Error importing ProtectedRoute</div> };
-})
-);
-
-const ImagePopup = lazy(() => import('cardboard/ImagePopup').catch(() => {
-  return { default: () => <div className='error'>Error importing ImagePopup</div> };
+  return { default: () => <div className='error'>ProtectedRoute: error importing ProtectedRoute</div> };
 })
 );
 
 function App() {
-  const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] =
-    React.useState(false);
-  const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
-  const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] =
-    React.useState(false);
-
-  // В корневом компоненте App создана стейт-переменная currentUser. Она используется в качестве значения для провайдера контекста.
-  const [currentUser, setCurrentUser] = React.useState({});
-
   const [isInfoToolTipOpen, setIsInfoToolTipOpen] = React.useState(false);
   const [tooltipStatus, setTooltipStatus] = React.useState("");
 
@@ -62,15 +52,6 @@ function App() {
 
   const history = useHistory();
 
-  // Запрос к API за информацией о пользователе и массиве карточек выполняется единожды, при монтировании.
-  React.useEffect(() => {
-    api.getUserInfo()
-      .then((userData) => {
-        setCurrentUser(userData);
-      })
-      .catch((err) => console.log(err));
-  }, []);
-  
   // при монтировании App описан эффект, проверяющий наличие токена и его валидности
   React.useEffect(() => {
     const token = localStorage.getItem("jwt");
@@ -92,53 +73,8 @@ function App() {
     }
   }, [history]);
 
-  function handleEditProfileClick() {
-    setIsEditProfilePopupOpen(true);
-  }
-
-  function handleAddPlaceClick() {
-    setIsAddPlacePopupOpen(true);
-  }
-
-  function handleEditAvatarClick() {
-    setIsEditAvatarPopupOpen(true);
-  }
-
-  function closeAllPopups() {
-    setIsEditProfilePopupOpen(false);
-    setIsAddPlacePopupOpen(false);
-    setIsEditAvatarPopupOpen(false);
+  function onCloseInfoTooltip() {
     setIsInfoToolTipOpen(false);
-  }
-
-  function handleUpdateUser(userUpdate) {
-    api
-      .setUserInfo(userUpdate)
-      .then((newUserData) => {
-        setCurrentUser(newUserData);
-        closeAllPopups();
-      })
-      .catch((err) => console.log(err));
-  }
-
-  function handleUpdateAvatar(avatarUpdate) {
-    api
-      .setUserAvatar(avatarUpdate)
-      .then((newUserData) => {
-        setCurrentUser(newUserData);
-        closeAllPopups();
-      })
-      .catch((err) => console.log(err));
-  }
-
-  function handleAddPlaceSubmit(newCard) {
-    api
-      .addCard(newCard)
-      .then((newCardFull) => {
-        setCards([newCardFull, ...cards]);
-        closeAllPopups();
-      })
-      .catch((err) => console.log(err));
   }
 
   const handleRegOk = event => {
@@ -195,52 +131,32 @@ function App() {
   }
   
   return (
-    // В компонент App внедрён контекст через CurrentUserContext.Provider
-    <CurrentUserContext.Provider value={currentUser}>
-      <div className="page__content">
-        <Header email={email} onSignOut={onSignOut} />
-        <Switch>
-          <ProtectedRoute
-            exact
-            path="/"
-            component={Main}
-            onClose={closeAllPopups}
-            onEditProfile={handleEditProfileClick}
-            onAddPlace={handleAddPlaceClick}
-            onEditAvatar={handleEditAvatarClick}
-            loggedIn={isLoggedIn}
-          />
-          <Route path="/signup">
-            <Suspense><Register /></Suspense>
-          </Route>
-          <Route path="/signin">
-            <Suspense><Login /></Suspense>
-          </Route>
-        </Switch>
-        <Footer />
-        <EditProfilePopup
-          isOpen={isEditProfilePopupOpen}
-          onUpdateUser={handleUpdateUser}
-          onClose={closeAllPopups}
+    <div className="page__content">
+      <Header email={email} onSignOut={onSignOut} />
+      <Switch>
+        <ProtectedRoute
+          exact
+          path="/"
+          component={Main}
+          loggedIn={isLoggedIn}
         />
-        <AddPlacePopup
-          isOpen={isAddPlacePopupOpen}
-          onAddPlace={handleAddPlaceSubmit}
-          onClose={closeAllPopups}
-        />
-        <PopupWithForm title="Вы уверены?" name="remove-card" buttonText="Да" />
-        <EditAvatarPopup
-          isOpen={isEditAvatarPopupOpen}
-          onUpdateAvatar={handleUpdateAvatar}
-          onClose={closeAllPopups}
-        />
+        <Route path="/signup">
+          <Suspense><Register /></Suspense>
+        </Route>
+        <Route path="/signin">
+          <Suspense><Login /></Suspense>
+        </Route>
+      </Switch>
+      <Footer />
+      <PopupWithForm title="Вы уверены?" name="remove-card" buttonText="Да" />
+      <Suspense>
         <InfoTooltip
           isOpen={isInfoToolTipOpen}
-          onClose={closeAllPopups}
+          onClose={onCloseInfoTooltip}
           status={tooltipStatus}
         />
-      </div>
-    </CurrentUserContext.Provider>
+      </Suspense>  
+    </div>
   );
 }
 

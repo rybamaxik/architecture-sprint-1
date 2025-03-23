@@ -1,8 +1,7 @@
 import React from 'react';
-
-import '../blocks/login/login.css';
-import '../blocks/auth-form/auth-form.css';
 import * as auth from "../utils/auth.js";
+
+import '../index.css';
 
 function Login() {
   const [email, setEmail] = React.useState('');

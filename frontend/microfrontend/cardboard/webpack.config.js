@@ -60,6 +60,17 @@ module.exports = (_, argv) => ({
           loader: "babel-loader",
         },
       },
+      {
+        test: /\.svg$/i,
+        type: 'asset',
+        resourceQuery: /url/, // *.svg?url
+      },
+      {
+        test: /\.svg$/i,
+        issuer: /\.[jt]sx?$/,
+        resourceQuery: { not: [/url/] }, // exclude react component if *.svg?url
+        use: ['@svgr/webpack'],
+      }
     ],
   },
 
@@ -67,7 +78,10 @@ module.exports = (_, argv) => ({
     new ModuleFederationPlugin({
       name: "cardboard",
       filename: "remoteEntry.js",
-      remotes: {},
+      remotes: {
+        'profile': 'profile@http://localhost:8098/remoteEntry.js',
+        'upload': 'upload@http://localhost:8099/remoteEntry.js'
+      },
       exposes: {
         './Main': './src/components/Main.js',
         './ProtectedRoute': './src/components/ProtectedRoute.js',

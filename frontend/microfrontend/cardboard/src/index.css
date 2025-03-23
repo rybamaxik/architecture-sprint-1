@@ -1,10 +1,8 @@
-body {
-  font-family: Arial, Helvetica, sans-serif;
-}
+@import url('./vendor/normalize.css');
+@import url('./vendor/fonts.css');
 
-.container {
-  font-size: 3rem;
-  margin: auto;
-  max-width: 800px;
-  margin-top: 20px;
-}
+@import url('./blocks/places/places.css');
+@import url('./blocks/card/card.css');
+@import url('./blocks/page/page.css');
+@import url('./blocks/popup/popup.css');
+@import url('./blocks/popup/_is-opened/popup_is-opened.css');

@@ -1,9 +1,7 @@
 import React from 'react';
-import { Link, Route } from 'react-router-dom';
-import { BrowserRouter } from "react-router-dom";
-
-import '../blocks/auth-form/auth-form.css';
 import * as auth from "../utils/auth.js";
+
+import '../index.css';
 
 function Register() {
   const [email, setEmail] = React.useState('');
@@ -48,7 +46,7 @@ function Register() {
         <div className="auth-form__wrapper">
           <button className="auth-form__button" type="submit">Зарегистрироваться</button>
           <p className="auth-form__text">Уже зарегистрированы?&nbsp;
-            <Route path="/signup"><Link className="auth-form__link" to="/signin">Войти</Link></Route>
+            <a className="auth-form__link" href="/signin">Войти</a>
           </p>
         </div>
       </form>

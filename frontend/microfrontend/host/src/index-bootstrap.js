@@ -1,9 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
 import App from './components/App';
 import * as serviceWorker from './serviceWorker';
 import { BrowserRouter } from "react-router-dom";
+
+import './index.css';
 
 const rootElement = document.getElementById("app")
 if (!rootElement) throw new Error("Failed to find the root element")

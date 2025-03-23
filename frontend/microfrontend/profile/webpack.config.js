@@ -14,6 +14,9 @@ module.exports = (_, argv) => ({
 
   resolve: {
     extensions: [".tsx", ".ts", ".jsx", ".js", ".json"],
+    alias: {
+      'shared-lib-usercontext': path.resolve(__dirname, '../shared/usercontext'),
+    }
   },
 
   devServer: {
@@ -57,15 +60,32 @@ module.exports = (_, argv) => ({
           loader: "babel-loader",
         },
       },
-    ],
+      {
+        test: /\.svg$/i,
+        type: 'asset',
+        resourceQuery: /url/, // *.svg?url
+      },
+      {
+        test: /\.svg$/i,
+        issuer: /\.[jt]sx?$/,
+        resourceQuery: { not: [/url/] }, // exclude react component if *.svg?url
+        use: ['@svgr/webpack'],
+      }
+    ]
   },
 
   plugins: [
     new ModuleFederationPlugin({
       name: "profile",
       filename: "remoteEntry.js",
-      remotes: {},
-      exposes: {},
+      remotes: {
+        'host': 'host@http://localhost:8095/remoteEntry.js'
+      },
+      exposes: {
+        './EditAvatarPopup': './src/components/EditAvatarPopup.js',
+        './EditProfilePopup': './src/components/EditProfilePopup.js',
+        './ProfileHeader': './src/components/ProfileHeader.js'
+      },
       shared: {
         ...deps,
         react: {
@@ -76,6 +96,10 @@ module.exports = (_, argv) => ({
           singleton: true,
           requiredVersion: deps["react-dom"],
         },
+        'shared-lib-usercontext': {
+          import: 'shared-lib-usercontext',
+          requiredVersion: require('../shared/usercontext/package.json').version,
+        }
       },
     }),
     new HtmlWebPackPlugin({

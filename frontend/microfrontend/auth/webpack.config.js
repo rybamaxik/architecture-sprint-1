@@ -57,6 +57,17 @@ module.exports = (_, argv) => ({
           loader: "babel-loader",
         },
       },
+      {
+        test: /\.svg$/i,
+        type: 'asset',
+        resourceQuery: /url/, // *.svg?url
+      },
+      {
+        test: /\.svg$/i,
+        issuer: /\.[jt]sx?$/,
+        resourceQuery: { not: [/url/] }, // exclude react component if *.svg?url
+        use: ['@svgr/webpack'],
+      }
     ],
   },
 
@@ -68,7 +79,8 @@ module.exports = (_, argv) => ({
       exposes: {
         './Login': './src/components/Login.js',
         './Register': './src/components/Register.js',
-        './CheckToken': './src/components/CheckToken.js'
+        './CheckToken': './src/components/CheckToken.js',
+        './InfoTooltip': './src/components/InfoTooltip.js'
       },
       shared: {
         ...deps,
