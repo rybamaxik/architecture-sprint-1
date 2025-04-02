@@ -13,6 +13,15 @@ function EditProfilePopup({ isOpen, onUpdateUser, onClose }) {
   const [name, setName] = React.useState('');
   const [description, setDescription] = React.useState('');
 
+  const currentUser = React.useContext(CurrentUserContext);
+
+  React.useEffect(() => {
+    if (currentUser) {
+      setName(currentUser.name);
+      setDescription(currentUser.about);
+    }
+  }, [currentUser]);
+ 
   function handleUpdateUser(userUpdate) {
     api
       .setUserInfo(userUpdate)
@@ -30,15 +39,6 @@ function EditProfilePopup({ isOpen, onUpdateUser, onClose }) {
   function handleDescriptionChange(e) {
     setDescription(e.target.value);
   }
-
-  const currentUser = React.useContext(CurrentUserContext);
-
-  React.useEffect(() => {
-    if (currentUser) {
-      setName(currentUser.name);
-      setDescription(currentUser.about);
-    }
-  }, [currentUser]);
 
   function handleSubmit(e) {
     e.preventDefault();
