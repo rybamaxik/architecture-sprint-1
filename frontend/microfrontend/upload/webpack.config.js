@@ -15,7 +15,7 @@ module.exports = (_, argv) => ({
   resolve: {
     extensions: [".tsx", ".ts", ".jsx", ".js", ".json"],
     alias: {
-      'shared-lib-usercontext': path.resolve(__dirname, '../shared/usercontext'),
+      'shared-lib-usercontext': path.resolve(__dirname, './shared/usercontext'),
     }
   },
 
@@ -96,7 +96,7 @@ module.exports = (_, argv) => ({
         },
         'shared-lib-usercontext': {
           import: 'shared-lib-usercontext',
-          requiredVersion: require('../shared/usercontext/package.json').version,
+          requiredVersion: require('./shared/usercontext/package.json').version,
         }
       },
     }),
