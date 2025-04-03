@@ -51,12 +51,82 @@ services:
     environment:
           CI: true
 
-  frontend:
+  microfrontend-auth:
+    container_name: auth
     build:
-      context: frontend
-      dockerfile: ../Dockerfile.frontend
+      context: frontend/microfrontend/auth
+      dockerfile: ../../../Dockerfile.frontend
     ports:
-      - 3000:3000
+      - 8097:8097
+    expose:
+      - "8097"
+    volumes:
+      - ./frontend/microfrontend/shared:/app/shared:ro
     depends_on:
       backend:
         condition: service_healthy
+    network_mode: "host"
+
+  microfrontend-cardboard:
+    container_name: cardboard
+    build:
+      context: frontend/microfrontend/cardboard
+      dockerfile: ../../../Dockerfile.frontend
+    ports:
+      - 8096:8096
+    expose:
+      - "8096"
+    volumes:
+      - ./frontend/microfrontend/shared:/app/shared:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+    network_mode: "host"
+
+  microfrontend-profile:
+    container_name: profile
+    build:
+      context: frontend/microfrontend/profile
+      dockerfile: ../../../Dockerfile.frontend
+    ports:
+      - 8098:8098
+    expose:
+      - "8098"
+    volumes:
+      - ./frontend/microfrontend/shared:/app/shared:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+    network_mode: "host"
+
+  microfrontend-upload:
+    container_name: upload
+    build:
+      context: frontend/microfrontend/upload
+      dockerfile: ../../../Dockerfile.frontend
+    ports:
+      - 8099:8099
+    expose:
+      - "8099"
+    volumes:
+      - ./frontend/microfrontend/shared:/app/shared:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+    network_mode: "host"
+
+  microfrontend-host:
+    container_name: host
+    build:
+      context: frontend/microfrontend/host
+      dockerfile: ../../../Dockerfile.frontend
+    ports:
+      - 8095:8095
+    expose:
+      - "8095"
+    volumes:
+      - ./frontend/microfrontend/shared:/app/shared:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+    network_mode: "host"

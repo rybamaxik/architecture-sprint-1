@@ -1,4 +1,4 @@
-FROM node:18-slim
+FROM node:23-slim
 
 ENV NODE_ENV development
 
@@ -13,5 +13,3 @@ RUN npm i \
 COPY . .
 
 CMD [ "yarn", "start" ]
-
-EXPOSE 3000
