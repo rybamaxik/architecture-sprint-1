@@ -30,7 +30,7 @@ describe('Запуск проекта', () => {
 
   beforeAll(async () => {
     yarnProcess = spawn('yarn', ['start'], { detached: true });
-    await waitPort({ host: 'localhost', port: 3000 });
+    await waitPort({ host: 'localhost', port: 8095 });
     browser = await chromium.launch({ headless: true });
     page = await browser.newPage();
   });
@@ -41,7 +41,7 @@ describe('Запуск проекта', () => {
   })
 
   test('Проверка корректности работы, при открытии страницы index.html', async () => {
-    await page.goto('http://localhost:3000/');
+    await page.goto('http://localhost:8095/');
     await page.waitForSelector('.page__content');
     const element = await page.locator('.page__content');
     expect(element).not.toBeNull();
